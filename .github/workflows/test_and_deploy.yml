@@ -1,0 +1,121 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: application test, push to prod and preprod branches then build preproduction and production images
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Start containers
+        run: cd tp; cd node-typescript-template; docker-compose -f "docker-compose.yml" up -d --build
+
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Install dependencies
+        run: cd tp; cd node-typescript-template; npm install
+        
+      - name: Run build
+        run: cd tp; cd node-typescript-template; npm run build
+
+      - name: Run tests
+        run: cd tp; cd node-typescript-template; npm run test
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" down
+    
+      - name: Send Notification to Slack
+        if: always()
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "text": "GitHub Action Test result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action Test result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+            }
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        
+  merge-master-into-prod:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Merge Master -> Production
+      uses: devmasx/merge-branch@master
+      with:
+        type: now
+        from_branch: master
+        target_branch: production
+        github_token: ${{ github.token }}
+      
+  build-production:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    needs: merge-master-into-prod
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build Docker image
+      run: |
+        docker-compose build
+        docker tag secure_coding:latest 0sko/secure_coding:latest
+        
+    - name: Publish image to Docker Hub
+      if: success()
+      run: |
+        echo "$DOCKER_HUB_PASSWORD" | docker login -u "0sko" --password-stdin
+        docker push 0sko/secure_coding:latest
+    - name: Send Notification to Slack
+      if: always()
+      id: slack
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        # For posting a rich message using Block Kit
+        payload: |
+          {
+            "text": "GitHub Action Deploy Production to Docker Hub result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "GitHub Action Deploy Production to Docker Hub result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
