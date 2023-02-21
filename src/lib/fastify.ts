@@ -5,8 +5,9 @@ import { checkSchemaBodyQueryParamsHook, errorHandler } from '@hooks/index'
 import { sessionRoutes } from '@routes/sessions'
 import { loadSession } from './session'
 
-if (!process.env.COOKIE_SECRET)
-    throw new Error('Missing COOKIE_SECRET env variable')
+if (!process.env.COOKIE_SECRET){
+    process.env.COOKIE_SECRET = "my-secret";
+}
 
 export const server = fastify({
     logger: true,
