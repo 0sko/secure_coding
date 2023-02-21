@@ -91,6 +91,7 @@ jobs:
       
   build-production:
     environment: production
+    needs: merge-master-into-prod
     runs-on: ubuntu-latest
     steps:
     - name: Set up QEMU
