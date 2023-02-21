@@ -93,7 +93,7 @@ jobs:
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-    needs: merge-master-into-prod
+#     needs: merge-master-into-prod
     environment: production
 
     steps:
@@ -102,7 +102,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker-compose build
+        docker build
         docker tag secure_coding:latest 0sko/secure_coding:latest
         
     - name: Publish image to Docker Hub
