@@ -15,7 +15,7 @@ export const getPasswordEntropy = (password: string): number => {
     let passwordLength = password.length;
     for (let char in frequencyMap) {
       let probability = frequencyMap[char] / passwordLength;
-      entropy -= probability Math.log2(probability);
+      entropy -= probability * Math.log2(probability);
     }
     entropy += Math.log2(Math.pow(alphabetLength,passwordLength));
 
