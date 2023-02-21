@@ -1,0 +1,4 @@
+POSTGRES_USER = "tutorial"
+POSTGRES_DB = "iam"
+POSTGRES_PASSWORD = "privatepassword"
+POSTGRES_PORT = 5432
