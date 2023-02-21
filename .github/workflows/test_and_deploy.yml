@@ -74,6 +74,7 @@ jobs:
       SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         
   merge-master-into-prod:
+    permissions: write-all
     runs-on: ubuntu-latest
     needs: test
     steps:
