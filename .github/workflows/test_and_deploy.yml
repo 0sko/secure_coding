@@ -106,7 +106,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         push: true
-        tags: secure_coding:latest
+        tags: 0sko/secure_coding:latest
     - name: Send Notification to Slack
       if: always()
       id: slack
