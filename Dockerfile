@@ -8,9 +8,13 @@ COPY package*.json ./
 
 RUN npm install
 
-# Bundle app source
+# Bundle app 
 COPY . .
+
+RUN npm install -g typescript
+
+RUN tsc
 
 EXPOSE 8080
 
-CMD [ "npm", "dev" ]
+CMD [ "node", "./dist/index.js" ]
