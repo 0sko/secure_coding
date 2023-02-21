@@ -19,7 +19,7 @@ export const getPasswordEntropy = (password: string): number => {
     }
     entropy += Math.log2(Math.pow(alphabetLength,passwordLength));
 
-    return entropy
+    return entropy;
 }
 
 export const validatePassword = (password: string): {result: boolean, entropy: number} => {
