@@ -16,16 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: create env file
-        run: |
-          touch .env
-          echo COOKIE_SECRET= ${{ secrets.COOKIE }} >> .env
-          echo POSTGRES_HOST = "127.0.0.1" >> .env
-          echo POSTGRES_TEST_PORT = 5432 >> .env
-          echo POSTGRES_PORT = 5432 >> .env
-          echo POSTGRES_USER= ${{ secrets.POSTGRES_USER }} >> .env
-          echo POSTGRES_DB= ${{ secrets.POSTGRES_DB }} >> .env
-          echo POSTGRES_PASSWORD= ${{ secrets.POSTGRES_PASSWORD }} >> .env
+#       - name: create env file
+#         run: |
+#           touch .env
+#           echo COOKIE_SECRET= ${{ secrets.COOKIE }} >> .env
+#           echo POSTGRES_HOST = "127.0.0.1" >> .env
+#           echo POSTGRES_TEST_PORT = 5432 >> .env
+#           echo POSTGRES_PORT = 5432 >> .env
+#           echo POSTGRES_USER= ${{ secrets.POSTGRES_USER }} >> .env
+#           echo POSTGRES_DB= ${{ secrets.POSTGRES_DB }} >> .env
+#           echo POSTGRES_PASSWORD= ${{ secrets.POSTGRES_PASSWORD }} >> .env
       
       - name: Start containers
         run: docker-compose -f "docker-compose.yml" up -d --build
