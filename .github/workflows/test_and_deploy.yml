@@ -75,18 +75,16 @@ jobs:
         
   merge-master-into-prod:
     runs-on: ubuntu-latest
-    environment: production
-    needs: test
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Merge Master -> Production
-      uses: devmasx/merge-branch@master
-      with:
-        type: now
-        from_branch: master
-        target_branch: production
-        github_token: ${{ github.token }}
+      - uses: actions/checkout@master
+
+      - name: Merge development -> staging
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: master
+          target_branch: production
+          github_token: ${{ github.token }}
       
   build-production:
     runs-on: ubuntu-latest
