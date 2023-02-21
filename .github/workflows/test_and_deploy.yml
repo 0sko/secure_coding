@@ -79,7 +79,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Merge development -> staging
+      - name: Merge master -> production
         uses: devmasx/merge-branch@master
         with:
           type: now
