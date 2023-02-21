@@ -1,25 +1,24 @@
 export const getPasswordEntropy = (password: string): number => {
-    const alphabetLength = 100;
-    
-    // Create a frequency map of the characters in the password
-    let frequencyMap: { [key: string]: number } = {};
-    for (let char of password) {
-      if (!frequencyMap[char]) {
-        frequencyMap[char] = 0;
-      }
-      frequencyMap[char]++;
+    const characterSet = [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/',
+        ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~'
+    ]
+    const passwordLength = password.length
+    const log2CharacterSet = Math.log2(characterSet.length)
+    let entropy = 0
+
+    // calculate the entropy of the password
+    for (let i = 0; i < passwordLength; i++) {
+        const character = password[i]
+
+        if (characterSet.includes(character)) {
+            entropy += log2CharacterSet
+        }
     }
 
-    // Calculate the entropy of the password
-    let entropy = 0;
-    let passwordLength = password.length;
-    for (let char in frequencyMap) {
-      let probability = frequencyMap[char] / passwordLength;
-      entropy -= probability * Math.log2(probability);
-    }
-    entropy += Math.log2(Math.pow(alphabetLength,passwordLength));
-
-    return entropy;
+    return entropy
 }
 
 export const validatePassword = (password: string): {result: boolean, entropy: number} => {
